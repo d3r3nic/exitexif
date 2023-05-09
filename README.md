@@ -1,70 +1,108 @@
-# Getting Started with Create React App
+# MetaMorph
+
+MetaMorph is a web service that removes EXIF metadata from images. It can be used as a standalone web app or integrated into other applications via an API.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Local Development
+
+To set up and run MetaMorph locally:
+
+1. Clone the repository: `git clone https://github.com/username/MetaMorph.git`
+2. Navigate into the project directory: `cd MetaMorph`
+3. Install dependencies: `npm install`
+4. Start the app: `npm start`
+
+The app will run in the development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser. The page will reload when you make changes. You may also see any lint errors in the console.
+
+## Running with Docker
+
+1. Build the Docker image: `docker build -t MetaMorph .`
+
+2. Start the Docker container:
+
+    - For Unix-based systems (Linux, MacOS):
+      ```bash
+      docker run -p 3000:3000 -v $(pwd):/app -d exitexif
+      ```
+
+    - For Windows systems:
+      ```bash
+      docker run -p 3000:3000 -v %cd%:/app -d exitexif
+      ```
+
+This command starts the Docker container and creates a volume that syncs the current directory with the `/app` directory in the Docker container. This allows changes in your local code to be immediately reflected in the Docker container, enabling hot reloading.
+
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `yarn start`
+- `npm start`: Runs the app in the development mode.
+- `npm test`: Launches the test runner in the interactive watch mode.
+- `npm build`: Builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
+- `npm eject`: Removes the single build dependency from your project.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Adding a New Package
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+When you need to add a new package to the project, follow these steps:
 
-### `yarn test`
+1. Install the new package in your local project using npm. For example:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    ```bash
+    npm install new-package
+    ```
 
-### `yarn build`
+   Replace `new-package` with the name of the package you're adding.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Rebuild your Docker image:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    ```bash
+    docker build -t exitexif .
+    ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Stop the running Docker container. First, find the container ID with:
 
-### `yarn eject`
+    ```bash
+    docker ps
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   Then stop the container with:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    ```bash
+    docker stop container_id
+    ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   Replace `container_id` with the ID of your running Docker container.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+4. Start a new Docker container with the updated image:
 
-## Learn More
+   For Unix-based systems (Linux, MacOS):
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    ```bash
+    docker run -p 3000:3000 -v $(pwd):/app -d exitexif
+    ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   For Windows systems:
 
-### Code Splitting
+    ```bash
+    docker run -p 3000:3000 -v %cd%:/app -d exitexif
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Now your running Docker container should include the new package.
 
-### Analyzing the Bundle Size
+## Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+To run the test suite: `npm test`
 
-### Making a Progressive Web App
+## CI/CD Pipeline
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+We use CircleCI for continuous integration and delivery. Whenever new code is pushed to the repository, CircleCI builds a Docker image of the app and pushes it to Amazon ECR.
 
-### Advanced Configuration
+## Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+MetaMorph is deployed on AWS. The live app can be accessed at: `http://your-live-app-url.com`
 
-### Deployment
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Contributions are welcome! Please read our contributing guidelines before submitting a pull request.
