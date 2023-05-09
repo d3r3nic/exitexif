@@ -14,7 +14,7 @@ function App() {
                     <p className="lead">
                         ExitExif helps you protect your privacy by removing potentially sensitive metadata from your images.
                     </p>
-                    <Button variant="primary" href="https://github.com/username/exitexif" target="_blank" rel="noopener noreferrer">
+                    <Button variant="primary" href="https://github.com/d3r3nic/exitexif" target="_blank" rel="noopener noreferrer">
                         Learn More
                     </Button>
                 </Col>

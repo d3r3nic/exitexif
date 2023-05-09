@@ -1,15 +1,15 @@
-# MetaMorph
+# exitexif
 
-MetaMorph is a web service that removes EXIF metadata from images. It can be used as a standalone web app or integrated into other applications via an API.
+exitexif is a web service that removes EXIF metadata from images. It can be used as a standalone web app or integrated into other applications via an API.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Local Development
 
-To set up and run MetaMorph locally:
+To set up and run exitexif locally:
 
-1. Clone the repository: `git clone https://github.com/username/MetaMorph.git`
-2. Navigate into the project directory: `cd MetaMorph`
+1. Clone the repository: `git clone https://github.com/d3r3nic/exitexif.git`
+2. Navigate into the project directory: `cd exitexif`
 3. Install dependencies: `npm install`
 4. Start the app: `npm start`
 
@@ -17,7 +17,7 @@ The app will run in the development mode. Open [http://localhost:3000](http://lo
 
 ## Running with Docker
 
-1. Build the Docker image: `docker build -t MetaMorph .`
+1. Build the Docker image: `docker build -t exitexif .`
 
 2. Start the Docker container:
 
@@ -101,7 +101,7 @@ We use CircleCI for continuous integration and delivery. Whenever new code is pu
 
 ## Deployment
 
-MetaMorph is deployed on AWS. The live app can be accessed at: `http://your-live-app-url.com`
+exitexif is deployed on AWS. The live app can be accessed at: `http://your-live-app-url.com`
 
 ## Contributing
 
