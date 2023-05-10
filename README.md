@@ -95,6 +95,26 @@ Now your running Docker container should include the new package.
 
 To run the test suite: `npm test`
 
+## Infrastructure Management
+
+We use Terraform to manage our AWS infrastructure, including our S3 bucket, CloudFront distribution, SSL certificate, and Route 53 records.
+
+The Terraform configuration is stored in a separate repository: [link to your Terraform repository]
+
+To set up and manage the infrastructure:
+
+1. Clone the Terraform repository: `git clone https://github.com/d3r3nic/terraform-repo.git` (replace with the actual URL of your Terraform repository)
+2. Navigate into the repository directory: `cd terraform-repo`
+3. Initialize Terraform: `terraform init`
+4. Apply the Terraform configuration: `terraform apply`
+
+The `terraform apply` command will show you a plan of the changes to be made to your infrastructure and ask for confirmation before proceeding. Review the plan carefully before confirming.
+
+Please note that managing the infrastructure requires AWS credentials with the necessary permissions. These credentials should be stored as environment variables (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`) on your system.
+
+For more information about using Terraform, see the [Terraform documentation](https://www.terraform.io/docs/index.html).
+
+
 ## CI/CD Pipeline
 
 We use CircleCI for continuous integration and delivery. Whenever new code is pushed to the repository, CircleCI builds a Docker image of the app and pushes it to Amazon ECR.
