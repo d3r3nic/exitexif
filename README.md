@@ -103,25 +103,66 @@ The Terraform configuration is stored in a separate repository: [link to your Te
 
 To set up and manage the infrastructure:
 
-1. Clone the Terraform repository: `git clone https://github.com/d3r3nic/terraform-repo.git` (replace with the actual URL of your Terraform repository)
-2. Navigate into the repository directory: `cd terraform-repo`
-3. Initialize Terraform: `terraform init`
-4. Apply the Terraform configuration: `terraform apply`
-
-The `terraform apply` command will show you a plan of the changes to be made to your infrastructure and ask for confirmation before proceeding. Review the plan carefully before confirming.
-
-Please note that managing the infrastructure requires AWS credentials with the necessary permissions. These credentials should be stored as environment variables (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`) on your system.
+Clone the Terraform repository and follow the steps: `git clone https://github.com/d3r3nic/terraform-repo.git` 
 
 For more information about using Terraform, see the [Terraform documentation](https://www.terraform.io/docs/index.html).
 
-
 ## CI/CD Pipeline
 
-We use CircleCI for continuous integration and delivery. Whenever new code is pushed to the repository, CircleCI builds a Docker image of the app and pushes it to Amazon ECR.
+We use GitHub Actions for our CI/CD pipeline. On each push to the main branch, our pipeline builds the React application and deploys it to an AWS S3 bucket.
 
+Here's an example of our GitHub Actions workflow:
+
+```yaml
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main  # replace with your default branch if not 'main'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build
+      run: npm run build
+
+    - name: Deploy to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'us-west-2'  # replace with your AWS region
+        SOURCE_DIR: 'build'
+```
 ## Deployment
 
-exitexif is deployed on AWS. The live app can be accessed at: `http://your-live-app-url.com`
+exitexif is deployed on AWS using a static website hosting configuration on an S3 bucket. The infrastructure for the deployment is managed using Terraform, with the configuration stored in a separate repository.
+
+The live app can be accessed at: `http://your-live-app-url.com`
+
+To deploy changes to the application:
+
+1. Merge your changes into the main branch. Our CI/CD pipeline, which uses GitHub Actions, automatically builds the application and deploys it to the S3 bucket.
+
+2. If you've made changes that require updates to the infrastructure (for example, changes to the Terraform configuration), you'll need to apply those changes separately. Navigate to the Terraform repository and follow the instructions in the README to apply the changes.
+
+Please note that you'll need appropriate permissions to merge changes into the main branch and to apply changes to the infrastructure.
 
 ## Contributing
 

@@ -1,31 +1,35 @@
-name: Deploy to S3
-
+name: Build and Deploy
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main  # replace with your default branch if not 'main'
 
 jobs:
-  deploy:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: Build Docker image
-        run: |
-          docker build -t your-app .
-          docker run --name app your-app
-
-      - name: Copy build artifacts from Docker container
-        run: docker cp app:/app/build .
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2  # replace with your preferred AWS region
+          node-version: 14
 
-      - name: Sync build artifacts to S3
-        run: aws s3 sync build/ s3://your-s3-bucket-name
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-west-2'  # replace with your AWS region
+          SOURCE_DIR: 'build'
