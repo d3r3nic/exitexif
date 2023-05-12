@@ -8,12 +8,14 @@ import {
   Form,
   Card,
   ListGroup,
+  Collapse,
 } from "react-bootstrap";
 import EXIF from "exif-js"; // This is to handle EXIF data
 import piexif from "piexifjs";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { arrayBufferToBinaryString } from "blob-util";
+import "./App.css";
 
 // UploadComponent is a component that allows users to select multiple files
 // from their file system. When files are selected, it updates the 'files'
@@ -45,6 +47,7 @@ const UploadComponent = ({ setFiles }) => {
 // like camera settings, location data, and more.
 const MetadataDisplayComponent = ({ file }) => {
   const [exifData, setExifData] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Use EXIF.js to extract EXIF data
   useEffect(() => {
@@ -57,16 +60,24 @@ const MetadataDisplayComponent = ({ file }) => {
   }, [file]);
 
   return (
-    <Card style={{ width: "18rem" }}>
-      <Card.Header>EXIF Data</Card.Header>
-      <ListGroup variant="flush">
-        {exifData &&
-          Object.keys(exifData).map((key, index) => (
-            <ListGroup.Item
-              key={index}
-            >{`${key}: ${exifData[key]}`}</ListGroup.Item>
-          ))}
-      </ListGroup>
+    <Card className="mb-4">
+      <Card.Header
+        className="bg-secondary text-white d-flex justify-content-between"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        EXIF Data
+        <span>{isOpen ? "-" : "+"}</span>
+      </Card.Header>
+      <Collapse in={isOpen}>
+        <ListGroup variant="flush">
+          {exifData &&
+            Object.keys(exifData).map((key, index) => (
+              <ListGroup.Item
+                key={index}
+              >{`${key}: ${exifData[key]}`}</ListGroup.Item>
+            ))}
+        </ListGroup>
+      </Collapse>
     </Card>
   );
 };
@@ -76,27 +87,36 @@ const MetadataDisplayComponent = ({ file }) => {
 // to remove the image. When the button is clicked, it calls the handleRemove
 // function with the file as an argument.
 const ImagePreviewComponent = ({ file, handleRemove }) => {
-    const [src, setSrc] = useState("");
+  const [src, setSrc] = useState("");
 
-    // Create a URL for the image
-    useEffect(() => {
-        let reader = new FileReader();
-        reader.onloadend = function (e) {
-            const arrayBuffer = e.target.result;
-            const binaryString = arrayBufferToBinaryString(arrayBuffer);
-            setSrc(binaryString);
-        };
-        if (file) {
-            reader.readAsArrayBuffer(file);
-        }
-    }, [file]); // this effect will run again if the `file` prop changes
+  // Create a URL for the image
+  useEffect(() => {
+    let reader = new FileReader();
+    reader.onloadend = function (e) {
+      const arrayBuffer = e.target.result;
+      const binaryString = arrayBufferToBinaryString(arrayBuffer);
+      setSrc(binaryString);
+    };
+    if (file) {
+      reader.readAsArrayBuffer(file);
+    }
+  }, [file]); // this effect will run again if the `file` prop changes
 
-    return (
-        <div>
-            <img src={`data:image/jpeg;base64,${btoa(src)}`} alt="preview" />
-            <button onClick={() => handleRemove(file)}>X</button>
-        </div>
-    );
+  return (
+    <Col>
+      <div className="image-preview">
+        <button
+          onClick={() => handleRemove(file)}
+          className="btn btn-close  btn-sm remove-btn"
+        ></button>
+        <img
+          src={`data:image/jpeg;base64,${btoa(src)}`}
+          alt="preview"
+          className="img-thumbnail mb-2 w-100 h-auto"
+        />
+      </div>
+    </Col>
+  );
 };
 
 // DownloadComponent is a component that takes an array of files as a prop.
@@ -168,9 +188,11 @@ const DownloadComponent = ({ files }) => {
   };
 
   return (
-    <Button variant="primary" onClick={handleDownload}>
-      Download Images
-    </Button>
+    <Col md="auto">
+      <Button className="download-btn" onClick={handleDownload}>
+        Download Non-EXIF-tant Images
+      </Button>
+    </Col>
   );
 };
 
@@ -183,9 +205,9 @@ function App() {
   };
 
   return (
-    <Container className="mt-5">
-      <Row className="justify-content-md-center text-center">
-        <Col md="8">
+    <Container className="mt-5 align-content-center">
+      <Row className="justify-content-md-center align text-center">
+        <Col md="8" className="mb-4">
           <h1 className="header mb-4">Welcome To ExitExif</h1>
           <p className="lead">
             Privacy matters. In an age of advanced AI and machine learning,
@@ -201,21 +223,52 @@ function App() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn More
+            Learn More About the Source Code
           </Button>
-          <UploadComponent setFiles={setFiles} />
-          {files.length > 0 &&
-            files.map((file, index) => (
-              <React.Fragment key={index}>
+          <p className="text-danger lead mt-4">
+            Your data is safe with us. None of your images or their metadata are
+            stored or transmitted anywhere. All processing is done locally on
+            your own machine, ensuring the highest level of privacy.
+          </p>
+        </Col>
+      </Row>
+      <hr />
+      <Row>
+        <h4 className="header mb-4">How to Use ExitExif</h4>
+        <ul className="lead">
+          <li>Select images by clicking the upload button below.</li>
+          <li>Preview the images and their EXIF data.</li>
+          <li>
+            Remove any unwanted images by clicking the "x" button on the image
+            preview.
+          </li>
+          <li>
+            Click the "Download Non-EXIF-tant Images" button to download a zip
+            file containing the images without EXIF data.
+          </li>
+        </ul>
+      </Row>
+      <Row>
+        <UploadComponent setFiles={setFiles} />
+      </Row>
+      <hr />
+
+      <Row className="justify-content-center">
+        {files.length > 0 && <DownloadComponent files={files} />}
+      </Row>
+      <Row>
+        {files.length > 0 &&
+          files.map((file, index) => (
+            <React.Fragment key={index}>
+              <Col md={3} sm={12}>
                 <ImagePreviewComponent
                   file={file}
                   handleRemove={handleRemove}
                 />
                 <MetadataDisplayComponent file={file} />
-                <DownloadComponent files={files} />
-              </React.Fragment>
-            ))}
-        </Col>
+              </Col>
+            </React.Fragment>
+          ))}
       </Row>
     </Container>
   );
